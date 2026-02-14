@@ -18,6 +18,7 @@ This repository is organized into **branches**:
 |--------|----------|----------|
 | `main` | Data processing pipeline only | Process BirdNET/Koogu raw outputs into clean matrices for your own analyses |
 | `analysis/baseline` | `main` + statistical analyses | Reproduce the baseline paper results (accumulation curves, community structure, seasonal patterns, etc.) |
+| `analysis/internship-m1` | `main` + M1 internship analyses | Reproduce figures and tables from the M1 IMABEE internship report (temporal patterns, GLM, NMDS, method comparison, etc.) |
 
 ### Branch `main` — Processing Pipeline
 
