@@ -61,6 +61,7 @@ CONFIG <- list(
   enrich_with_bold = FALSE,
 
   run_baseline = TRUE,            # Run baseline paper analyses after processing
+  run_internship_m1 = FALSE,      # Run M1 IMABEE internship analyses (temporal, GLM, NMDS, etc.)
   
   # Output
   output_dir = "integrated_results",
@@ -467,6 +468,29 @@ if (!is.null(results) && isTRUE(CONFIG$run_baseline)) {
   cat("  Baseline analyses skipped (run_baseline = FALSE)\n")
   cat("  Set CONFIG$run_baseline <- TRUE or run manually:\n")
   cat("  source(\"R/run_baseline_analyses.R\")\n")
+}
+
+# -- internship M1 analyses --
+if (!is.null(results) && isTRUE(CONFIG$run_internship_m1)) {
+  m1_script <- file.path(module_dir, "run_internship_m1_analyses.R")
+  if (file.exists(m1_script)) {
+    cat("\n[INTERNSHIP-M1] Running M1 IMABEE internship analyses...\n\n")
+    tryCatch({
+      source(m1_script)
+    }, error = function(e) {
+      cat(sprintf("\n[INTERNSHIP-M1] Failed: %s\n", e$message))
+      cat("  You can run it manually: source(\"R/run_internship_m1_analyses.R\")\n")
+    })
+  } else {
+    cat("\n[INTERNSHIP-M1] run_internship_m1_analyses.R not found in ", module_dir, "\n")
+    cat("  Internship M1 analyses skipped. Checkout 'analysis/internship-m1' branch.\n")
+  }
+} else if (is.null(results)) {
+  cat("  Internship M1 analyses skipped (processing failed)\n")
+} else {
+  cat("  Internship M1 analyses skipped (run_internship_m1 = FALSE)\n")
+  cat("  Set CONFIG$run_internship_m1 <- TRUE or run manually:\n")
+  cat("  source(\"R/run_internship_m1_analyses.R\")\n")
 }
 
 cat("\n")
