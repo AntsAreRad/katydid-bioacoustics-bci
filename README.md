@@ -160,10 +160,8 @@ See `data/examples/bird_species_thresholds_example.csv` for format.
 
 ## Known Issues
 
-- **Site S21**: AudioMoth RTC was not synchronised for some deployments, producing year-2000 timestamps. These are filtered out (`extract_local_date` sets dates < 2024 to NA). The raw detections remain valid.
-- **Site S09**: Geographically isolated, consistently low diversity across both taxa. Identified as an outlier in detection–richness analyses.
-
----
+- **Site S21**: Year 2000 timestamps seem to have been produced for some deployments. These are filtered out in `internship_helpers.R` / `baseline_helpers.R` (`extract_local_date` sets dates < 2024 to NA). The raw detections remain valid.
+- **Site S09**: Consistently low diversity across both taxa. Identified as an outlier in detection–richness analyses.
 
 ## License
 
