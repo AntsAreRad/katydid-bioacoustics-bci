@@ -107,7 +107,7 @@ bird_det <- read.csv("integrated_results/bird_detections.csv")
 - **Katydids**: Koogu detector (confidence ≥ 0.95), 5-day minimum detection criterion
 - **Birds**: BirdNET (confidence ≥ 0.9), species-specific thresholds supported
 - **Timezone**: AudioMoth UTC → Panama local time (UTC−5)
-- **Metabarcoding**: DNA-based orthopteran survey for comparison (ForLeon.xlsx)
+- **Metabarcoding**: DNA-based orthopteran survey for comparison
 
 ### Species-Specific BirdNET Thresholds
 
