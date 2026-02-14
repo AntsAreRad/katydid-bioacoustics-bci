@@ -29,7 +29,7 @@ R/
 ├── data_processing.R         # BirdNET + Koogu batch processing
 └── main_analysis.R           # Integration, matrices, metabarcoding
 data/
-├── ForLeon.xlsx              # Metabarcoding reference data
+├── (metabarcoding data)          # Metabarcoding reference data
 ├── Vegetation_data_25_plots.xlsx  # Vegetation plot data
 └── examples/
     └── bird_species_thresholds_example.csv
@@ -55,7 +55,7 @@ R/
 
 ### Branch `analysis/internship-m1` — M1 IMABEE Internship Analyses
 
-Everything in `main`, plus the refactored analysis modules and dedicated internship scripts:
+Everything in `main`, plus refactored analysis modules and dedicated internship scripts:
 
 ```
 R/
@@ -71,16 +71,6 @@ R/
 ├── internship_report_annexes.R       # → Appendix 1–5: summary tables
 └── run_internship_m1_analyses.R      # Runs all 5 internship analyses in sequence
 ```
-
-**Report figure mapping:**
-
-| Script | Report figure/table |
-|--------|-------------------|
-| `internship_method_comparison.R` | Figure 1 — Species detection comparison |
-| `internship_temporal_analysis.R` | Figure 2 — Hourly detection patterns |
-| `internship_glm_analysis.R` | Figure 3 + Appendix 3 — GLM relationships |
-| `internship_multivariate.R` | Figure 4 — NMDS with detection abundances |
-| `internship_report_annexes.R` | Appendix 1–5 — Summary tables |
 
 ---
 
@@ -112,7 +102,7 @@ source("run_analysis.R")
 source("R/run_baseline_analyses.R")
 ```
 
-Results go to `results/baseline/` with CSVs and figures in subdirectories.
+Results go to `results/` with CSVs and figures in subdirectories.
 
 ### 3. With M1 internship analyses (`analysis/internship-m1` branch)
 
@@ -153,7 +143,7 @@ bird_det <- read.csv("integrated_results/bird_detections.csv")
 - **Katydids**: Koogu detector (confidence ≥ 0.95), 5-day minimum detection criterion
 - **Birds**: BirdNET (confidence ≥ 0.9), species-specific thresholds supported
 - **Timezone**: AudioMoth UTC → Panama local time (UTC−5)
-- **Metabarcoding**: DNA-based orthopteran survey for comparison
+- **Metabarcoding**: DNA-based orthopteran survey for comparison 
 
 ### Species-Specific BirdNET Thresholds
 
@@ -170,10 +160,8 @@ See `data/examples/bird_species_thresholds_example.csv` for format.
 
 ## Known Issues
 
-- **Site S21**: AudioMoth RTC was not synchronised for some deployments, producing year-2000 timestamps. These are filtered out in `internship_helpers.R` / `baseline_helpers.R` (`extract_local_date` sets dates < 2024 to NA). The raw detections remain valid.
-- **Site S09**: Geographically isolated, consistently low diversity across both taxa. Identified as an outlier in detection–richness analyses.
-
----
+- **Site S21**: Year 2000 timestamps seem to have been produced for some deployments. These are filtered out in `internship_helpers.R` / `baseline_helpers.R` (`extract_local_date` sets dates < 2024 to NA). The raw detections remain valid.
+- **Site S09**: Consistently low diversity across both taxa. Identified as an outlier in detection–richness analyses.
 
 ## License
 
