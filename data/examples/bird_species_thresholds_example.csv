@@ -1,0 +1,9 @@
+species,species_code,confidence_threshold,notes,source
+Mealy Parrot,meapar1,0.85,Common and loud - lower threshold acceptable,manual_validation
+Keel-billed Toucan,kebto01,0.92,Sometimes confused with Chestnut-mandibled,manual_validation
+Great Tinamou,gretna1,0.80,Very distinctive call - reliable at lower threshold,literature
+Rufous Motmot,rufmot1,0.95,Confusion risk with Broad-billed Motmot,manual_validation
+Bright-rumped Attila,briatt1,0.88,Variable calls but distinctive pattern,manual_validation
+Slaty-tailed Trogon,slattr1,0.90,Default threshold adequate,default
+Fasciated Antshrike,fasant1,0.93,Sometimes confused with Barred Antshrike,manual_validation
+Clay-colored Thrush,clcthr1,0.85,Very common and reliably detected,manual_validation
