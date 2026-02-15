@@ -1,20 +1,18 @@
-# ==============================================================================
-# DATA PROCESSING FUNCTIONS
-# ==============================================================================
+# Data processing functions
 #
 # Functions for loading, processing, and transforming bioacoustic and 
 # metabarcoding data for katydid biodiversity analysis
 #
-# Project: Katydid Bioacoustics - BCI 2025
+# Project: Katydid Bioacoustics - BCI 2025-2026
 # Context: Comparison of bioacoustic vs DNA metabarcoding methods for 
 #          monitoring Orthoptera (katydids) in tropical rainforest
 # 
 # Location: Barro Colorado Island (BCI), Panama
 # Collaboration: STRI (Yves Basset, Greg Lamarre) + Cornell Lab (Laurel Symes)
 #
-# Author: Leon Brouille (M1 IMABEE)
+# Author: Leon Brouille (M2 IMABEE)
 # Supervisors: Dr. Yves Basset, Dr. Greg Lamarre, Dr. Laurel Symes
-# Date: 2025
+# Date: 2025-2026
 #
 # Required packages:
 #   - tidyverse (dplyr, tidyr, readr)
@@ -22,7 +20,6 @@
 #   - lubridate
 #   - stringr
 #
-# ==============================================================================
 
 # Required libraries
 library(tidyverse)
@@ -30,9 +27,7 @@ library(readxl)
 library(lubridate)
 library(stringr)
 
-# ==============================================================================
-# SECTION 0: SPECIES-SPECIFIC CONFIDENCE THRESHOLDS
-# ==============================================================================
+# Species-specific confidence thresholds
 
 #' Load species-specific confidence thresholds from CSV
 #'
@@ -84,6 +79,7 @@ library(stringr)
 #'   \code{\link{generate_threshold_template}}
 #'
 #' @export
+
 load_species_thresholds <- function(filepath) {
   
   cat(sprintf("\n[*] Loading species-specific thresholds from: %s\n", filepath))
@@ -210,6 +206,7 @@ load_species_thresholds <- function(filepath) {
 #' @seealso \code{\link{load_species_thresholds}}
 #'
 #' @export
+
 apply_species_thresholds <- function(detections,
                                      species_thresholds = NULL,
                                      default_threshold = 0.9,
@@ -294,6 +291,7 @@ apply_species_thresholds <- function(detections,
 #' @seealso \code{\link{load_species_thresholds}}
 #'
 #' @export
+
 generate_threshold_template <- function(detections,
                                         output_file = "bird_species_thresholds_template.csv",
                                         default_threshold = 0.9,
@@ -397,7 +395,7 @@ process_single_deployment <- function(deployment_path,
                                       species_thresholds = NULL,
                                       max_files_per_batch = 3000) {
   
-  cat(sprintf("\n=== PROCESSING DEPLOYMENT: %s ===\n", deployment_name))
+  cat(sprintf("\n - Processing bird deployment: %s \n", deployment_name))
   
   # List all .txt files in deployment
   files <- list.files(path = deployment_path, 
@@ -529,11 +527,10 @@ process_single_deployment <- function(deployment_path,
 }
 
 
-#' Process a single katydid deployment (FIXED version)
+#' Process a single katydid deployment
 #'
-#' Processes katydid .selections.txt files from Raven/Koogu annotations with
-#' proper handling of the Tags/Score format. This corrected version properly
-#' parses katydid-specific annotation files.
+#' Processes katydid .selections.txt files with
+#' proper handling of the Tags/Score format.
 #'
 #' @param deployment_path Character. Full path to the katydid deployment folder
 #' @param deployment_name Character. Name of the deployment
@@ -569,7 +566,7 @@ process_single_katydid_deployment_FIXED <- function(deployment_path,
                                                     confidence_threshold = 0.7,
                                                     max_files_per_batch = 3000) {
   
-  cat(sprintf("\n=== PROCESSING KATYDID DEPLOYMENT: %s ===\n", deployment_name))
+  cat(sprintf("\n - Processing katydid deployment: %s \n", deployment_name))
   
   # List all .selections.txt files
   files <- list.files(path = deployment_path,
@@ -718,9 +715,8 @@ process_single_katydid_deployment_FIXED <- function(deployment_path,
 }
 
 
-# ==============================================================================
-# SECTION 2: DATA COMBINATION AND AGGREGATION
-# ==============================================================================
+
+# Data combination and aggregation
 
 #' Combine all processed bird deployments
 #'
@@ -747,7 +743,7 @@ process_single_katydid_deployment_FIXED <- function(deployment_path,
 #' @export
 combine_all_deployments <- function(output_dir) {
   
-  cat("\n=== COMBINING ALL BIRD DEPLOYMENTS ===\n")
+  cat("\n=== Combining all bird deployments ===\n")
   
   deployment_dir <- file.path(output_dir, "deployments")
   
@@ -841,7 +837,7 @@ combine_all_deployments <- function(output_dir) {
 #' @export
 combine_all_katydid_deployments <- function(output_dir) {
   
-  cat("\n=== COMBINING ALL KATYDID DEPLOYMENTS ===\n")
+  cat("\n=== Combining all katydid deployments ===\n")
   
   deployment_dir <- file.path(output_dir, "katydid_deployments")
   
@@ -921,9 +917,8 @@ combine_all_katydid_deployments <- function(output_dir) {
 }
 
 
-# ==============================================================================
-# SECTION 3: KATYDID DATA LOADING
-# ==============================================================================
+
+# Katydid data loading
 
 #' Load katydid data with improved structure recognition
 #'
@@ -1119,13 +1114,12 @@ load_katydid_data_improved <- function(katydid_dir = NULL,
 }
 
 
-# ==============================================================================
-# SECTION 3.5: DETECTION DAYS FILTERING (Laurel Symes Criterion)
-# ==============================================================================
+
+# Detection days filtering
 
 #' Filter species by minimum detection days
 #'
-#' Applies the Laurel Symes criterion: a species must be detected on at least
+#' Applies criterion: a species must be detected on at least
 #' a minimum number of distinct days at a site to be considered present.
 #' This reduces false positives from sporadic/erroneous detections.
 #'
@@ -1144,10 +1138,6 @@ load_katydid_data_improved <- function(katydid_dir = NULL,
 #'
 #' This criterion was recommended by Dr. Laurel Symes (Cornell Lab) to ensure
 #' robust species presence determination in bioacoustic monitoring.
-#'
-#' @references
-#' Symes, L. (personal communication, 2024). Validation criteria for
-#' automated katydid detection.
 #'
 #' @examples
 #' \dontrun{
@@ -1212,9 +1202,8 @@ filter_by_detection_days <- function(detections, min_days = 5) {
 }
 
 
-# ==============================================================================
-# SECTION 4: METABARCODING DATA LOADING
-# ==============================================================================
+
+# Metabarcoding data loading
 
 #' Read metabarcoding data from Excel file
 #'
@@ -1244,6 +1233,7 @@ filter_by_detection_days <- function(detections, min_days = 5) {
 #' @seealso \code{\link{enrich_with_bin_info}}
 #'
 #' @export
+
 read_metabarcoding_data <- function(metabarcoding_file, enrich_with_bold = FALSE) {
   
   cat("Loading metabarcoding data...\n")
@@ -1306,7 +1296,7 @@ read_metabarcoding_data <- function(metabarcoding_file, enrich_with_bold = FALSE
   identified_species_count <- length(unique(orthoptera_data[[species_col]][
     !is.na(orthoptera_data[[species_col]]) & orthoptera_data[[species_col]] != ""]))
   
-  cat(sprintf("\n=== SUMMARY ===\n"))
+  cat(sprintf("\n=== Summary ===\n"))
   cat(sprintf("Total taxa (BINs): %d\n", total_taxa))
   cat(sprintf("Identified species: %d\n", identified_species_count))
   
@@ -1323,9 +1313,8 @@ read_metabarcoding_data <- function(metabarcoding_file, enrich_with_bold = FALSE
 }
 
 
-# ==============================================================================
-# SECTION 5: VEGETATION DATA LOADING
-# ==============================================================================
+
+# Vegetation data loading
 
 #' Read vegetation data from Excel file
 #'
@@ -1417,9 +1406,8 @@ read_vegetation_data <- function(excel_file) {
 }
 
 
-# ==============================================================================
-# SECTION 6: MATRIX CREATION
-# ==============================================================================
+
+# Matrix creation
 
 #' Create katydid presence/absence matrix
 #'
@@ -1481,14 +1469,13 @@ create_detection_count_matrix <- function(raw_detections,
   
   cat(sprintf("Detection matrix created: %d sites, %d species\n",
               nrow(detection_counts), ncol(detection_counts) - 1))
+  cat("Morpheus would be proud\n")
   
   return(detection_counts)
 }
 
 
-# ==============================================================================
-# SECTION 7: RESULTS SAVING
-# ==============================================================================
+# Results saving
 
 #' Save bird deployment results
 #'
@@ -1502,6 +1489,7 @@ create_detection_count_matrix <- function(raw_detections,
 #' @return Data frame with summary statistics
 #'
 #' @export
+
 save_deployment_results <- function(detections, deployment_name, output_dir) {
   
   deployment_output_dir <- file.path(output_dir, "deployments")
@@ -1561,6 +1549,7 @@ save_deployment_results <- function(detections, deployment_name, output_dir) {
 #' @return Data frame with summary statistics
 #'
 #' @export
+
 save_katydid_deployment_results <- function(detections, deployment_name, output_dir) {
   
   deployment_output_dir <- file.path(output_dir, "katydid_deployments")
@@ -1608,13 +1597,12 @@ save_katydid_deployment_results <- function(detections, deployment_name, output_
 }
 
 
-# ==============================================================================
-# SECTION 8: FALLBACK AND UTILITY FUNCTIONS
-# ==============================================================================
+
+# Fallback and utility functions
 
 #' Generate simulated katydid data (fallback function)
 #'
-#' Creates simulated katydid detection data when real data processing fails.
+#' Creates simulated katydid detection data when real data processing fails (for testing).
 #' Used as a fallback to ensure the analysis pipeline continues.
 #'
 #' @param confidence_threshold Numeric. Minimum confidence threshold. Default: 0.1
@@ -1626,9 +1614,9 @@ save_katydid_deployment_results <- function(detections, deployment_name, output_
 #'
 #' @details
 #' WARNING: This is simulated data for testing only.
-#' NEVER use simulated data for actual scientific results!
 #'
 #' @export
+
 generate_simulated_katydid_data <- function(confidence_threshold = 0.1,
                                             n_sites = 10,
                                             n_species = 5,
@@ -1675,8 +1663,3 @@ generate_simulated_katydid_data <- function(confidence_threshold = 0.1,
     presence_matrix = presence_matrix
   ))
 }
-
-
-# ==============================================================================
-# END OF DATA_PROCESSING.R
-# ==============================================================================

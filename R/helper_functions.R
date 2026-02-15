@@ -1,10 +1,8 @@
-# ==============================================================================
 # HELPER FUNCTIONS FOR KATYDID BIOACOUSTICS PROJECT
-# ==============================================================================
 #
 # Project: Comparing Bioacoustics vs DNA Metabarcoding for Katydid Monitoring
 # Site: Barro Colorado Island (BCI), Panama
-# Internship: M1 IMABEE - Katydid Bioacoustics 2024-2025
+# Internship: M1 IMABEE - Katydid Bioacoustics 2024-2025, M2 IMABEE 2026
 # Supervisors: Laurel Symes (Cornell), Yves Basset (STRI), Greg Lamarre (STRI)
 #
 # This file contains utility functions used across the analysis pipeline:
@@ -14,9 +12,7 @@
 # - File structure testing
 #
 # Author: Leon Brouille
-# Last updated: 2025-10-18
 #
-# ==============================================================================
 
 # Required packages
 library(tidyverse)  # Data manipulation and piping
@@ -24,9 +20,8 @@ library(stringr)    # String operations
 library(httr)       # HTTP requests for BOLD API
 library(xml2)       # XML parsing for BOLD responses
 
-# ==============================================================================
-# DEPLOYMENT IDENTIFICATION FUNCTIONS
-# ==============================================================================
+
+# Deployments identification function
 
 #' Identify Available BirdNET Deployments
 #'
@@ -66,6 +61,7 @@ library(xml2)       # XML parsing for BOLD responses
 #' @seealso \code{\link{identify_katydid_deployments}} for katydid-specific version
 #'
 #' @export
+
 identify_deployments <- function(directory) {
   # Validate directory existence
   if (!dir.exists(directory)) {
@@ -130,6 +126,7 @@ identify_deployments <- function(directory) {
 #' @seealso \code{\link{identify_deployments}} for BirdNET version
 #'
 #' @export
+
 identify_katydid_deployments <- function(directory) {
   # Validate directory existence
   if (!dir.exists(directory)) {
@@ -174,9 +171,8 @@ identify_katydid_deployments <- function(directory) {
 }
 
 
-# ==============================================================================
-# PROCESSED DEPLOYMENT CHECKING FUNCTIONS
-# ==============================================================================
+
+# Processed deployment checking function
 
 #' Check Already Processed BirdNET Deployments
 #'
@@ -210,6 +206,7 @@ identify_katydid_deployments <- function(directory) {
 #' @seealso \code{\link{check_processed_katydid_deployments}}
 #'
 #' @export
+
 check_processed_deployments <- function(output_dir) {
   
   deployment_output_dir <- file.path(output_dir, "deployments")
@@ -267,6 +264,7 @@ check_processed_deployments <- function(output_dir) {
 #' @seealso \code{\link{check_processed_deployments}}
 #'
 #' @export
+
 check_processed_katydid_deployments <- function(output_dir) {
   
   deployment_output_dir <- file.path(output_dir, "katydid_deployments")
@@ -293,9 +291,8 @@ check_processed_katydid_deployments <- function(output_dir) {
 }
 
 
-# ==============================================================================
-# FILE TESTING FUNCTIONS
-# ==============================================================================
+
+# File testing functions
 
 #' Test Corrected Processing on Example File
 #'
@@ -331,7 +328,7 @@ check_processed_katydid_deployments <- function(output_dir) {
 #' @export
 test_corrected_processing <- function(example_file) {
   
-  cat("=== TESTING CORRECTED PROCESSING ON EXAMPLE FILE ===\n")
+  cat("Testing corrected processing on example file...\n")
   
   if (!file.exists(example_file)) {
     cat("[ERROR] Example file not found\n")
@@ -374,9 +371,7 @@ test_corrected_processing <- function(example_file) {
 }
 
 
-# ==============================================================================
-# DATA QUALITY CHECK FUNCTIONS
-# ==============================================================================
+# Data quality check functions
 
 #' Check Data Quality of Analysis Results
 #'
@@ -411,9 +406,10 @@ test_corrected_processing <- function(example_file) {
 #' @seealso \code{\link{check_data_quality_with_glm}}
 #'
 #' @export
+
 check_data_quality <- function(results) {
   
-  cat("\n=== DATA QUALITY CHECK ===\n")
+  cat("\n=== DAata quality check ===\n")
   
   # Check bird data
   if (!is.null(results$bird_data)) {
@@ -461,7 +457,7 @@ check_data_quality <- function(results) {
     }
   }
   
-  cat("=== QUALITY CHECK COMPLETE ===\n\n")
+  cat("=== Quality check complete! ===\n\n")
 }
 
 
@@ -499,6 +495,7 @@ check_data_quality <- function(results) {
 #' @seealso \code{\link{check_data_quality}}, \code{\link{analyze_all_glm_relationships}}
 #'
 #' @export
+
 check_data_quality_with_glm <- function(results) {
   
   # Call base quality check function
@@ -527,13 +524,12 @@ check_data_quality_with_glm <- function(results) {
     }
   }
   
-  cat("=== GLM QUALITY CHECK COMPLETE ===\n\n")
+  cat("=== GLM quality check complete! ===\n\n")
 }
 
 
-# ==============================================================================
-# BOLD API FUNCTIONS (Taxonomic Enrichment)
-# ==============================================================================
+
+# BOLD API functions (Taxonomic Enrichment)
 
 #' Get Taxonomic Information from BOLD Database
 #'
@@ -584,6 +580,7 @@ check_data_quality_with_glm <- function(results) {
 #' @seealso \code{\link{enrich_with_bin_info}} for batch processing multiple BINs
 #'
 #' @export
+
 get_bin_info <- function(bin_id) {
   
   # Clean BIN ID (remove "BOLD:" prefix if present)
@@ -714,6 +711,7 @@ get_bin_info <- function(bin_id) {
 #' @seealso \code{\link{get_bin_info}}
 #'
 #' @export
+
 enrich_with_bin_info <- function(orthoptera_data, rate_limit_seconds = 1) {
   
   cat("Enriching data with BOLD BIN information...\n")
@@ -781,7 +779,7 @@ enrich_with_bin_info <- function(orthoptera_data, rate_limit_seconds = 1) {
     count(id_source) %>%
     mutate(percentage = round(n / nrow(enriched_data) * 100, 1))
   
-  cat("\n=== ENRICHMENT RESULTS ===\n")
+  cat("\n=== Enrichment results ===\n")
   cat(sprintf("Total records processed: %d\n", nrow(enriched_data)))
   
   for (i in 1:nrow(improvement_stats)) {
@@ -825,9 +823,8 @@ enrich_with_bin_info <- function(orthoptera_data, rate_limit_seconds = 1) {
 }
 
 
-# ==============================================================================
-# DIAGNOSTIC FUNCTIONS
-# ==============================================================================
+
+# Diagnostic functions
 
 #' Test Katydid Directory Structure
 #'
@@ -864,8 +861,9 @@ enrich_with_bin_info <- function(orthoptera_data, rate_limit_seconds = 1) {
 #' @seealso \code{\link{identify_katydid_deployments}}
 #'
 #' @export
+
 test_katydid_structure <- function(katydid_dir) {
-  cat("=== TESTING KATYDID DIRECTORY STRUCTURE ===\n")
+  cat("Testing katydid directory structure...\n")
   
   # Check directory existence
   if (!dir.exists(katydid_dir)) {
@@ -906,8 +904,3 @@ test_katydid_structure <- function(katydid_dir) {
     return(FALSE)
   })
 }
-
-
-# ==============================================================================
-# END OF HELPER FUNCTIONS
-# ==============================================================================
