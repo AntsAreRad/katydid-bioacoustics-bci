@@ -1,14 +1,13 @@
-# ==============================================================================
+
 # MAIN ANALYSIS SCRIPT - Integrated Bioacoustic vs Metabarcoding Analysis
-# ==============================================================================
+
 # Project: Katydid Bioacoustics - BCI Panama
-# Author: Leon Brouille (M1 IMABEE)
+# Author: Leon Brouille (M2 IMABEE)
 # Supervisors: Dr. Yves Basset (STRI), Dr. Greg Lamarre (STRI), 
 #              Dr. Laurel Symes (Cornell Lab of Ornithology)
-# Date: 2025
+# Date: 2025-2026
 # Purpose: Main orchestration script for comprehensive comparative analysis
 #          between bioacoustic monitoring and DNA metabarcoding methods
-# ==============================================================================
 
 # Required packages
 # Note: Source all module files before using this script
@@ -17,7 +16,7 @@
 # source("scripts/statistical_analysis.R")
 # source("scripts/temporal_analysis.R")
 # source("scripts/plotting_functions.R")
-# source("scripts/species_accumulation_abg.R")  # Alpha-beta-gamma curves (Laurel Symes style)
+# source("scripts/species_accumulation_abg.R")  # Alpha-beta-gamma curves
 
 suppressPackageStartupMessages({
   library(tidyverse)
@@ -34,9 +33,8 @@ suppressPackageStartupMessages({
 })
 
 
-# ==============================================================================
-# MAIN INTEGRATED ANALYSIS FUNCTION
-# ==============================================================================
+
+# Main integrated analysis functions
 
 #' Main Integrated Bioacoustic vs Metabarcoding Analysis Pipeline
 #'
@@ -290,20 +288,20 @@ suppressPackageStartupMessages({
 #' }
 #'
 #' @note
-#' \strong{IMPORTANT CONSIDERATIONS:}
+#' \strong{Maybe important considerations:}
 #' \itemize{
 #'   \item Ensure sufficient RAM (>=8 GB recommended) for large datasets
-#'   \item Processing from scratch can take 30-120 minutes; plan accordingly
+#'   \item Processing from scratch can take a lot of time; plan accordingly
 #'   \item Pre-processed files significantly speed up re-analyses
 #'   \item The function creates the output directory if it doesn't exist
 #'   \item Interrupted analyses can be resumed using \code{skip_processed_deployments = TRUE}
 #'   \item Confidence thresholds critically affect detection rates; default values 
-#'         are optimized based on preliminary validation but may need adjustment
+#'         may need adjustments
 #'   \item Temporal analyses require timestamp information in detection files
 #'   \item Some analyses (e.g., co-inertia) require matching sites between methods
 #' }
 #' 
-#' \strong{DATA REQUIREMENTS:}
+#' \strong{Data requirements:}
 #' \itemize{
 #'   \item BirdNET files must be in format: *.BirdNET.results.txt
 #'   \item Katydid files must be in format: *.selections.txt
@@ -447,13 +445,13 @@ main_integrated_analysis <- function(bird_dir = NULL,
   #'     length(results_complete$comprehensive_comparison$katydid_comparison$both_methods), "\n")
   #' }
   
-  # =============================================================================
-  # INITIALIZATION
-  # =============================================================================
+
   
+  # Initialization
+
   cat("\n", paste(rep("=", 70), collapse = ""), "\n")
   cat("     INTEGRATED BIOACOUSTIC vs METABARCODING ANALYSIS\n")
-  cat("       ForestGEO BCI - Katydid Monitoring Project 2025\n")
+  cat("       ForestGEO BCI - Katydid Monitoring Project 2025-2026\n")
   cat(paste(rep("=", 70), collapse = ""), "\n\n")
   
   # Create output directory structure
@@ -482,7 +480,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   # Log analysis parameters
-  cat("ANALYSIS PARAMETERS:\n")
+  cat("Analysis parameters:\n")
   cat(sprintf("    - Bird confidence threshold (default): %.2f\n", confidence_threshold_birds))
   if (!is.null(bird_species_thresholds)) {
     cat(sprintf("    - Bird species-specific thresholds: %d species loaded\n", 
@@ -541,10 +539,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 1: LOAD/PROCESS BIRD DATA
-  # =============================================================================
-  
+
+    # STEP 1: Load/process bird data
+
   cat(paste(rep("-", 70), collapse = ""), "\n")
   cat("STEP 1: Processing bird data...\n")
   cat(paste(rep("-", 70), collapse = ""), "\n")
@@ -631,7 +628,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
         species_col = "common_name"
       )
       
-      # CRITICAL FIX: Recalculate presence matrix from filtered detections
+      # Recalculate presence matrix from filtered detections
       # The pre-saved matrix may contain species at lower confidence levels
       filtered_bird_matrix <- filtered_bird_detections %>%
         select(site, common_name) %>%
@@ -677,10 +674,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 2: LOAD/PROCESS KATYDID DATA
-  # =============================================================================
-  
+
+    # STEP 2: Load/process katydid data
+
   cat(paste(rep("-", 70), collapse = ""), "\n")
   cat("STEP 2: Loading katydid bioacoustic data...\n")
   cat(paste(rep("-", 70), collapse = ""), "\n")
@@ -717,10 +713,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 3: LOAD METABARCODING DATA
-  # =============================================================================
-  
+
+  # STEP 3: Load Metabarcoding data
+
   cat(paste(rep("-", 70), collapse = ""), "\n")
   cat("STEP 3: Loading DNA metabarcoding data...\n")
   cat(paste(rep("-", 70), collapse = ""), "\n")
@@ -739,10 +734,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
               n_ortho_species))
   
   
-  # =============================================================================
-  # STEP 4: LOAD VEGETATION DATA
-  # =============================================================================
-  
+
+  # STEP 4: Load vegetation data
+
   cat(paste(rep("-", 70), collapse = ""), "\n")
   cat("STEP 4: Loading vegetation data...\n")
   cat(paste(rep("-", 70), collapse = ""), "\n")
@@ -760,14 +754,13 @@ main_integrated_analysis <- function(bird_dir = NULL,
   cat(sprintf("   Vegetation data loaded for %d plots\n\n", n_plots))
   
   
-  # =============================================================================
-  # SAVE PROCESSED DATA (always, regardless of analysis mode)
-  # =============================================================================
+
+  # Save Processed data (always, regardless of analysis mode)
   # This ensures clean matrices are available even in processing-only mode
   
   if (save_results) {
     cat(paste(rep("-", 70), collapse = ""), "\n")
-    cat("SAVING PROCESSED DATA...\n")
+    cat("Saving processed data...\n")
     cat(paste(rep("-", 70), collapse = ""), "\n")
     
     # Bird presence matrix
@@ -829,10 +822,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 5: METHODOLOGICAL COMPARISONS
-  # =============================================================================
-  
+
+  # STEP 5: Methodological comparisons
+
   comprehensive_results <- NULL
   site_similarity <- NULL
   temporal_patterns_katydids <- NULL
@@ -881,9 +873,8 @@ main_integrated_analysis <- function(bird_dir = NULL,
     cat("  5c. Temporal analysis skipped (run_temporal_analysis = FALSE)\n")
   }
   
-  # =============================================================================
-  # STEP 5d: TEMPORAL RAREFACTION FOR REALISTIC SITE RICHNESS
-  # =============================================================================
+
+  # STEP 5d: Temporal rarefaction for realistic site richness
   # Using weekly windows instead of annual accumulation to get realistic
   # between-site variation in species richness
   
@@ -973,13 +964,12 @@ main_integrated_analysis <- function(bird_dir = NULL,
   
   cat("   Temporal rarefaction complete\n")
   
-  # =============================================================================
-  # STEP 5e: SPECIES ACCUMULATION CURVES (ALPHA-BETA-GAMMA)
-  # =============================================================================
-  
+
+  # STEP 5e: Species accumulation curves (ALPHA-BETA-GAMMA)
+
   cat("  5e. Calculating species accumulation curves (alpha-beta-gamma)...\n")
   
-  # Katydid accumulation with alpha-beta-gamma decomposition (Laurel Symes style)
+  # Katydid accumulation with alpha-beta-gamma decomposition
   katydid_accumulation <- NULL
   if (!is.null(katydid_data) && !is.null(katydid_data$raw_detections)) {
     katydid_accumulation <- tryCatch({
@@ -1022,7 +1012,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
     }
   }
   
-  # Bird accumulation with alpha-beta-gamma decomposition (Laurel Symes style)
+  # Bird accumulation with alpha-beta-gamma decomposition
   bird_accumulation <- NULL
   if (!is.null(bird_data) && !is.null(bird_data$raw_detections)) {
     bird_accumulation <- tryCatch({
@@ -1065,7 +1055,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
     }
   }
   
-  # Save accumulation plots (Laurel Symes style with annotations)
+  # Save accumulation plots
   if (save_results && create_plots) {
     dir.create(file.path(output_dir, "figures/accumulation"), 
                showWarnings = FALSE, recursive = TRUE)
@@ -1128,7 +1118,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
               row.names = FALSE)
   }
   
-  # Save temporal rarefaction results (NEW)
+  # Save temporal rarefaction results
   if (save_results) {
     # Katydid rarefied richness
     if (!is.null(katydid_rarefied)) {
@@ -1235,10 +1225,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 6: ECOLOGICAL RELATIONSHIPS
-  # =============================================================================
-  
+
+  # STEP 6: Ecological relationships
+
   vegetation_effects_katydids <- NULL
   vegetation_effects_metabar <- NULL
   vegetation_effects_birds <- NULL
@@ -1374,10 +1363,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 7: MULTIVARIATE COMMUNITY ANALYSES
-  # =============================================================================
-  
+
+  # STEP 7: Multivariate community analysis
+
   multivariate_katydids <- NULL
   multivariate_metabar <- NULL
   multivariate_birds <- NULL
@@ -1458,10 +1446,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   
-  # =============================================================================
-  # STEP 8: VISUALIZATION AND SYNTHESIS
-  # =============================================================================
-  
+
+  # STEP 8: Visualization and synthesis
+
   cat(paste(rep("-", 70), collapse = ""), "\n")
   cat("STEP 8: Creating comprehensive visualizations and synthesis...\n")
   cat(paste(rep("-", 70), collapse = ""), "\n")
@@ -1496,10 +1483,9 @@ main_integrated_analysis <- function(bird_dir = NULL,
     bird_accumulation = bird_accumulation
   )
   
-  # =============================================================================
-  # STEP 8.1: COMPREHENSIVE GLM ANALYSIS
-  # =============================================================================
-  
+
+  # STEP 8.1: Comprehensive GLM analysis
+
   glm_results <- NULL
   richness_ranges <- NULL
   
@@ -1599,12 +1585,11 @@ main_integrated_analysis <- function(bird_dir = NULL,
   cat("   Visualization and synthesis complete\n\n")
   
   
-  # =============================================================================
-  # EXECUTIVE SUMMARY
-  # =============================================================================
-  
+
+  # Executive summary
+
   cat("\n", paste(rep("=", 70), collapse = ""), "\n")
-  cat("            ANALYSIS COMPLETE - EXECUTIVE SUMMARY \n")
+  cat("            Analysis Complete - Executive Summary \n")
   cat(paste(rep("=", 70), collapse = ""), "\n\n")
   
   # Calculate key metrics
@@ -1614,7 +1599,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
   
   # Species richness per site
   if (!is.null(richness_ranges)) {
-    cat(" SPECIES RICHNESS PER SITE:\n")
+    cat(" Species richness per sites:\n")
     
     if (!is.null(richness_ranges$katydid)) {
       cat(sprintf("     - Katydids: %s species per site (mean: %.1f)\n", 
@@ -1637,7 +1622,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
   }
   
   # Species counts
-  cat(" SPECIES COUNTS:\n")
+  cat(" Species counts:\n")
   cat(sprintf("     - Katydids (Bioacoustic): %d species\n", total_katydid_species_bio))
   cat(sprintf("     - Orthoptera (Metabarcoding): %d species\n", total_ortho_species_meta))
   cat(sprintf("     - Birds (for comparison): %d species\n\n", total_bird_species))
@@ -1648,7 +1633,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
     only_bio <- length(comprehensive_results$katydid_comparison$only_acoustic)
     only_meta <- length(comprehensive_results$katydid_comparison$only_metabar)
     
-    cat("OVERLAP: DETECTION OVERLAP:\n")
+    cat("Overlap: detection overlap:\n")
     cat(sprintf("     - Detected by both methods: %d species (%.1f%%)\n", 
                 overlap_species, 
                 ifelse(total_katydid_species_bio + total_ortho_species_meta > 0,
@@ -1665,14 +1650,14 @@ main_integrated_analysis <- function(bird_dir = NULL,
   
   # Correlation results
   if (!is.null(site_similarity) && !is.null(site_similarity$richness_correlation)) {
-    cat("CORRELATION: SITE-LEVEL CORRELATION:\n")
+    cat("Correlation: Site-levels correlations:\n")
     cat(sprintf("     - Spearman correlation between methods: r = %.3f, p = %.3f\n\n",
                 site_similarity$richness_correlation$estimate,
                 site_similarity$richness_correlation$p.value))
   }
   
   # Vegetation effects summary
-  cat(" VEGETATION EFFECTS:\n")
+  cat(" Vegetation effects:\n")
   
   if (!is.null(vegetation_effects_katydids) && !is.null(vegetation_effects_katydids$correlations)) {
     sig_correlations_katydids <- sum(vegetation_effects_katydids$correlations$p_value < 0.05, na.rm = TRUE)
@@ -1695,13 +1680,13 @@ main_integrated_analysis <- function(bird_dir = NULL,
       filter(detection_count == max(detection_count)) %>%
       pull(period) %>%
       first()
-    cat(" TEMPORAL PATTERNS:\n")
+    cat(" Temporal patterns:\n")
     cat(sprintf("     - Most active period for katydids: %s\n\n", most_active_period))
   }
   
   # Output directory information
   cat(sprintf(" ALL RESULTS SAVED IN: %s\n\n", output_dir))
-  cat(" KEY OUTPUT FILES:\n")
+  cat(" Key output files:\n")
   cat("     - tables/katydid_method_comparison.csv - Detection method comparison\n")
   cat("     - tables/site_richness_comparison.csv - Site-level richness data\n")
   cat("     - tables/vegetation_correlations_*.csv - Vegetation relationship analyses\n")
@@ -1734,9 +1719,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
 }
 
 
-# ==============================================================================
-# RESUME INTERRUPTED ANALYSIS FUNCTION
-# ==============================================================================
+# Resume interrupted analysis function
 
 #' Resume an Interrupted Integrated Analysis
 #'
@@ -1806,6 +1789,7 @@ main_integrated_analysis <- function(bird_dir = NULL,
 #'   message("No processed data found - starting from scratch")
 #' }
 #' }
+
 resume_integrated_analysis <- function(output_dir, 
                                        katydid_dir = NULL,
                                        katydid_detections_file = NULL,
@@ -1814,7 +1798,7 @@ resume_integrated_analysis <- function(output_dir,
                                        vegetation_file) {
   
   cat("\n", paste(rep("=", 70), collapse = ""), "\n")
-  cat("     RESUMING INTEGRATED ANALYSIS\n")
+  cat("     Resuming integrated analysis\n")
   cat(paste(rep("=", 70), collapse = ""), "\n\n")
   
   # Check what's already been processed for birds
@@ -1902,8 +1886,3 @@ resume_integrated_analysis <- function(output_dir,
     return(NULL)
   }
 }
-
-
-# ==============================================================================
-# END OF main_analysis.R
-# ==============================================================================
