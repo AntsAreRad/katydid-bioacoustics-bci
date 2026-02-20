@@ -4,7 +4,7 @@
 #
 # Project: Comparing Bioacoustics vs DNA Metabarcoding for Katydid Monitoring
 # Site: Barro Colorado Island (BCI), Panama
-# Author: Leon Brouille (M1 IMABEE)
+# Author: Leon Brouille (M2 IMABEE)
 # Supervisors: Dr. Yves Basset (STRI), Dr. Greg Lamarre (STRI),
 #              Dr. Laurel Symes (Cornell Lab of Ornithology)
 # Date: 2025/2026
@@ -39,10 +39,15 @@ CONFIG <- list(
   min_detection_days = 5,         # Minimum days for species to be considered present
   
   # Species-specific thresholds (optional)
-  # Set to NULL to use uniform threshold, or provide path to CSV file like data/examples/bird_species_thresholds_example.csv
-  # CSV format: species,species_code,confidence_threshold,notes
-  # Generate a template with: generate_threshold_template(detections, "my_thresholds.csv")
-  bird_species_thresholds_file = NULL,
+  # Set to NULL to use uniform threshold, or provide path to CSV file.
+  # Generate from Doug Robinson's evaluation: source("convert_doug_robinson_thresholds.R")
+  # CSV format: species,confidence_threshold,exclude,threshold_99,threshold_95,threshold_90,...
+  bird_species_thresholds_file = "data/bird_species_thresholds_doug_robinson.csv",
+  
+  # Threshold precision level: "99" (most conservative), "95", or "90" (most permissive)
+  # Only used when the thresholds file has multi-level columns (Doug Robinson format)
+  # Fallback: if chosen level is NA for a species, uses next stricter level
+  bird_threshold_level = "99",
   
   # Batch processing
   max_files_per_batch = 3000,     # Files per batch to avoid memory issues
@@ -60,7 +65,7 @@ CONFIG <- list(
   create_plots = FALSE,
   enrich_with_bold = FALSE,
 
-  run_baseline = TRUE,            # Run baseline paper analyses after processing
+  run_baseline = FALSE,            # Run baseline paper analyses after processing
   
   # Output
   output_dir = "integrated_results",
@@ -250,7 +255,10 @@ cat("\n[3/6] Verifying data files...\n")
 # Load species-specific thresholds if configured
 bird_species_thresholds <- NULL
 if (!is.null(CONFIG$bird_species_thresholds_file)) {
-  bird_species_thresholds <- load_species_thresholds(CONFIG$bird_species_thresholds_file)
+  bird_species_thresholds <- load_species_thresholds(
+    CONFIG$bird_species_thresholds_file,
+    threshold_level = CONFIG$bird_threshold_level %||% "99"
+  )
   if (!is.null(bird_species_thresholds)) {
     cat(sprintf("  [OK] Species-specific thresholds loaded for %d species\n", 
                 nrow(bird_species_thresholds)))
@@ -387,13 +395,21 @@ if (!is.null(results)) {
   # Threshold info
   cat("\nConfidence thresholds:\n")
   if (!is.null(bird_species_thresholds)) {
-    cat(sprintf("  - Birds: Species-specific (%d species from %s)\n", 
-                nrow(bird_species_thresholds),
+    n_excl <- sum(is.infinite(bird_species_thresholds$confidence_threshold))
+    n_valid <- sum(is.finite(bird_species_thresholds$confidence_threshold))
+    cat(sprintf("  - Birds: Species-specific (%d valid + %d excluded, from %s)\n", 
+                n_valid, n_excl,
                 basename(CONFIG$bird_species_thresholds_file)))
+    cat(sprintf("           Precision level: %s%%\n", CONFIG$bird_threshold_level %||% "99"))
     cat(sprintf("           Default for unlisted species: %.2f\n", CONFIG$bird_confidence))
-    cat(sprintf("           Range: %.2f - %.2f\n",
-                min(bird_species_thresholds$confidence_threshold),
-                max(bird_species_thresholds$confidence_threshold)))
+    finite_t <- bird_species_thresholds$confidence_threshold[
+      is.finite(bird_species_thresholds$confidence_threshold) &
+      bird_species_thresholds$confidence_threshold > 0
+    ]
+    if (length(finite_t) > 0) {
+      cat(sprintf("           Threshold range: %.2f - %.2f\n",
+                  min(finite_t), max(finite_t)))
+    }
   } else {
     cat(sprintf("  - Birds: Uniform threshold = %.2f\n", CONFIG$bird_confidence))
   }

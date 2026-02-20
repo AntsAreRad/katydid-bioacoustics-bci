@@ -23,16 +23,12 @@ This repository is organized into **branches**:
 ### Branch `main` — Processing Pipeline
 
 ```
-run_analysis.R               # Entry point — configure and run
+run_analysis.R                           # Entry point — configure and run
+convert_doug_robinson_thresholds.R       # Convert Doug Robinson's raw evaluation to pipeline format
 R/
-├── helper_functions.R        # Deployment detection, BOLD API, utilities
-├── data_processing.R         # BirdNET + Koogu batch processing
-└── main_analysis.R           # Integration, matrices, metabarcoding
-data/
-├── (metabarcoding data)          # Metabarcoding reference data
-├── Vegetation_data_25_plots.xlsx  # Vegetation plot data
-└── examples/
-    └── bird_species_thresholds_example.csv
+├── helper_functions.R                   # Deployment detection, BOLD API, utilities
+├── data_processing.R                    # BirdNET + Koogu batch processing, threshold functions
+└── main_analysis.R                      # Integration, matrices, metabarcoding
 ```
 
 ### Branch `analysis/baseline` — Baseline Paper Analyses
@@ -141,27 +137,46 @@ bird_det <- read.csv("integrated_results/bird_detections.csv")
 - **25 SwiftOne recorders** deployed across BCI forest plots
 - **11 deployments** processed (February 2024 — January 2025)
 - **Katydids**: Koogu detector (confidence ≥ 0.95), 5-day minimum detection criterion
-- **Birds**: BirdNET (confidence ≥ 0.9), species-specific thresholds supported
-- **Timezone**: AudioMoth UTC → Panama local time (UTC−5)
+- **Birds**: BirdNET v2.4 with species-specific confidence thresholds (see below)
+- **Timezone**: AudioMoth UTC → Panama local time (UTC-5)
 - **Metabarcoding**: DNA-based orthopteran survey for comparison 
 
-### Species-Specific BirdNET Thresholds
+### Species-specific BirdNET thresholds
 
-You can define per-species confidence thresholds:
+Douglas Robinson (BCI ornithologist) manually evaluated the reliability of BirdNET detections species by species across all 469 species detected on BCI. His evaluation classified each species into one of three categories:
 
-1. Run the pipeline once with the uniform threshold
-2. Generate a template: `generate_threshold_template(results$bird_data$detections, "data/bird_species_thresholds.csv")`
-3. Edit the CSV, adjust thresholds per species
-4. Set `CONFIG$bird_species_thresholds_file <- "data/bird_species_thresholds.csv"` in `run_analysis.R`
+- **Valid with custom threshold** (64 species): BirdNET detects the species reliably above a certain confidence score. Each species gets its own threshold (range: 0.25 to 0.98).
+- **Excluded** (405 species): all detections are false positives (misidentified calls, insects, mechanical noise, etc.). These species are removed entirely from the dataset.
+- **Not evaluated**: species detected by BirdNET but absent from Doug's file use the default uniform threshold (0.9).
 
-See `data/examples/bird_species_thresholds_example.csv` for format.
+Doug provided thresholds at three precision levels (99%, 95%, 90%). The pipeline uses 99% by default (most conservative) with automatic fallback to 95% or 90% when the stricter level is not available for a given species.
+
+The thresholds are enabled by default. To configure:
+
+```r
+# In run_analysis.R:
+CONFIG$bird_species_thresholds_file <- "data/bird_species_thresholds_doug_robinson.csv"
+CONFIG$bird_threshold_level <- "99"   # "99", "95", or "90"
+
+# To disable and revert to uniform threshold:
+CONFIG$bird_species_thresholds_file <- NULL
+```
+
+To regenerate the converted thresholds file from Doug's raw evaluation:
+
+```r
+source("convert_doug_robinson_thresholds.R")
+```
+
+The raw evaluation is stored in `data/raw/1 - Species key Doug Robinson.csv`. See `data/examples/bird_species_thresholds_example.csv` for the simple format if you want to define your own thresholds without the conversion step.
 
 ---
 
 ## Known Issues
 
 - **Site S21**: Year 2000 timestamps seem to have been produced for some deployments. These are filtered out in `internship_helpers.R` / `baseline_helpers.R` (`extract_local_date` sets dates < 2024 to NA). The raw detections remain valid.
-- **Site S09**: Consistently low diversity across both taxa. Identified as an outlier in detection–richness analyses.
+- **Site S09**: Consistently low diversity across both taxa. Identified as an outlier in detection-richness analyses.
+- **BirdNET "nocall" entries**: BirdNET outputs a "nocall" label when no species is detected. These are automatically filtered out during threshold application.
 
 ## License
 

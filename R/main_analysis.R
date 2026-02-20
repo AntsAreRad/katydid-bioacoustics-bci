@@ -666,11 +666,15 @@ main_integrated_analysis <- function(bird_dir = NULL,
   cat(sprintf("   Bird data loaded: %d species, %d detections\n\n", 
               n_bird_species, n_bird_detections))
   
-  # Create detailed bird species analysis
+  # Create detailed bird species analysis (requires temporal_analysis.R module)
   if (process_birds_from_scratch && save_results) {
-    cat("   Creating detailed bird species analysis...\n")
-    bird_analysis <- create_bird_species_summary(bird_data$detections, output_dir)
-    cat("   Bird species summary saved\n\n")
+    if (exists("create_bird_species_summary", mode = "function")) {
+      cat("   Creating detailed bird species analysis...\n")
+      bird_analysis <- create_bird_species_summary(bird_data$detections, output_dir)
+      cat("   Bird species summary saved\n\n")
+    } else {
+      cat("   [--] Skipping bird species summary (temporal_analysis.R not loaded)\n\n")
+    }
   }
   
   
@@ -705,11 +709,15 @@ main_integrated_analysis <- function(bird_dir = NULL,
   cat(sprintf("   Katydid data loaded: %d species, %d detections\n\n", 
               n_katydid_species, n_katydid_detections))
   
-  # Create detailed katydid species analysis
+  # Create detailed katydid species analysis (requires temporal_analysis.R module)
   if (process_katydids_from_scratch && save_results) {
-    cat("   Creating detailed katydid species analysis...\n")
-    katydid_analysis <- create_katydid_species_summary(katydid_data$raw_detections, output_dir)
-    cat("   Katydid species summary saved\n\n")
+    if (exists("create_katydid_species_summary", mode = "function")) {
+      cat("   Creating detailed katydid species analysis...\n")
+      katydid_analysis <- create_katydid_species_summary(katydid_data$raw_detections, output_dir)
+      cat("   Katydid species summary saved\n\n")
+    } else {
+      cat("   [--] Skipping katydid species summary (temporal_analysis.R not loaded)\n\n")
+    }
   }
   
   
