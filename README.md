@@ -46,7 +46,9 @@ R/
 ├── baseline_venn_diagram.R         # Bioacoustic vs metabarcoding overlap
 ├── baseline_vegetation_effects.R   # Vegetation correlations (Spearman, GLM, GAM)
 ├── baseline_community_structure.R  # PCoA, envfit, inter-taxa correlation
-└── run_baseline_analyses.R         # Runs all 8 analyses in sequence
+├── baseline_site_composition.R     # Jaccard similarity, beta diversity decomposition (Baselga 2010)
+├── baseline_species_activity.R     # Per-species monthly call activity, heatmaps
+└── run_baseline_analyses.R         # Runs all 10 analyses in sequence
 ```
 
 ### Branch `analysis/internship-m1` — M1 IMABEE Internship Analyses

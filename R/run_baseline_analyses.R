@@ -19,6 +19,8 @@
 #   6. Venn diagram bioacoustic vs metabarcoding
 #   7. Vegetation effects (Spearman, GLM, GAM)
 #   8. Community structure (PCoA, envfit, inter-taxa)
+#   9. Site composition similarity (Jaccard, beta decomposition)
+#  10. Per-species call activity over time
 
 cat("\n")
 cat("  BASELINE PAPER ANALYSES\n")
@@ -74,14 +76,16 @@ if (file.exists(helpers_path)) {
   cat("  [!] baseline_helpers.R not found, scripts may fail\n\n")
 }
 
-run_script("baseline_accumulation_curves.R",   "1/8 Accumulation curves")
-run_script("baseline_species_distribution.R",  "2/8 Species distribution")
-run_script("baseline_detection_richness.R",    "3/8 Detection count vs richness")
-run_script("baseline_cooccurrence.R",          "4/8 Co-occurrence birds x katydids")
-run_script("baseline_first_detection.R",       "5/8 Mean first detection date")
-run_script("baseline_venn_diagram.R",          "6/8 Venn diagram")
-run_script("baseline_vegetation_effects.R",    "7/8 Vegetation effects")
-run_script("baseline_community_structure.R",   "8/8 Community structure")
+run_script("baseline_accumulation_curves.R",   "1/10 Accumulation curves")
+run_script("baseline_species_distribution.R",  "2/10 Species distribution")
+run_script("baseline_detection_richness.R",    "3/10 Detection count vs richness")
+run_script("baseline_cooccurrence.R",          "4/10 Co-occurrence birds x katydids")
+run_script("baseline_first_detection.R",       "5/10 Mean first detection date")
+run_script("baseline_venn_diagram.R",          "6/10 Venn diagram")
+run_script("baseline_vegetation_effects.R",    "7/10 Vegetation effects")
+run_script("baseline_community_structure.R",   "8/10 Community structure")
+run_script("baseline_site_composition.R",     "9/10 Site composition similarity")
+run_script("baseline_species_activity.R",    "10/10 Per-species call activity")
 
 end_time <- Sys.time()
 duration <- difftime(end_time, start_time, units = "mins")
